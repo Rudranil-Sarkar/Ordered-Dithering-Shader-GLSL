@@ -26,16 +26,16 @@ const vec3[16] palette = vec3[](
 uniform sampler2D u_tex0;
 uniform vec2 u_resolution;
 
-const int[64]dither_table = int[](
+const int[64] dither_table = int[](
 	
-	0, 48, 12, 60, 3, 51, 15, 63,
-	32, 16, 44, 28, 35, 19, 47, 31,
-	8, 56, 4, 52, 11, 59, 7, 55,
-	40, 24, 36, 20, 43, 27, 39, 23,
-	2, 50, 14, 62, 1, 49, 13, 61,
-	34, 18, 46, 30, 33, 17, 45, 29,
-	10, 58, 6, 54, 9, 57, 5, 53,
-	42, 26, 38, 22, 41, 25, 37, 21
+    0, 48, 12, 60, 3, 51, 15, 63,
+    32, 16, 44, 28, 35, 19, 47, 31,
+    8,  56, 4,  52, 11, 59, 7,  55,
+    40, 24, 36, 20, 43, 27, 39, 23,
+    2,  50, 14, 62, 1,  49, 13, 61,
+    34, 18, 46, 30, 33, 17, 45, 29,
+    10, 58, 6,  54, 9,  57, 5,  53,
+    42, 26, 38, 22, 41, 25, 37, 21
 	
 );
 
@@ -83,7 +83,7 @@ float hueDistance(float h1, float h2)
 	return min(abs(1. - diff), diff);
 }
 
-const float lightnessSteps = 4.0;
+const float lightnessSteps = 4.;
 
 // SOURCE: http://alex-charlton.com/posts/Dithering_on_the_GPU/
 float lightnessStep(float l) {
@@ -135,9 +135,11 @@ vec3 dither(vec2 pos,vec3 color){
 	int x = int(mod(pos.x, 8.));
 	int y = int(mod(pos.y, 8.));
 	
-	int index = x + y * 8;
+	int index = x + y * 8.;
+
+	float bias = + 0.246; // This variable can be adjusted in range of -1 to 1 for more desirable result(Or maybe as a uniform);
 	
-	float limit = float(dither_table[index]) / 64.;
+	float limit = (float(dither_table[index]) + 1.) / 64. + bias;
 	
 	vec3[2] Colors = Closest_color(color.x);
 	
